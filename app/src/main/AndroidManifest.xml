@@ -17,18 +17,25 @@
         android:theme="@style/AppTheme">
         <activity android:name=".Walkthrough.WelcomeActivity">
 
+        </activity>
+
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/mapKey" />
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
+
+        <activity android:name=".Home" />
+        <activity android:name=".Notifications"></activity>
+        <activity android:name=".AboutPage" />
+        <activity android:name=".GeoFence">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-
-
-        <activity android:name=".Home" />
-        <activity android:name=".MainActivity">
-
         </activity>
     </application>
 

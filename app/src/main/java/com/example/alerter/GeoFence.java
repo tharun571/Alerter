@@ -1,5 +1,9 @@
 package com.example.alerter;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -7,10 +11,9 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
+import android.widget.SeekBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -18,68 +21,73 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.onesignal.OneSignal;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import mehdi.sakout.fancybuttons.FancyButton;
 
-public class Home extends AppCompatActivity implements OnMapReadyCallback {
+public class GeoFence extends AppCompatActivity implements OnMapReadyCallback {
+
+    GoogleMap gMap;
+    Circle mapCircle;;
     Location currentLocation;
     FusedLocationProviderClient fusedLocationProviderClient;
     private static final int REQUEST_CODE = 101;
     CircleOptions circleOptions;
+    @BindView(R.id.seekBar)
+    SeekBar seekBar;
 
-    @BindView(R.id.btn_continue2)
-    FancyButton geoFence;
+    @BindView(R.id.btn_continue)
+    FancyButton btn_continue;
 
-//    @BindView(R.id.btn_continue3)
-//    FancyButton notifs;
-//
-//    @BindView(R.id.btn_continue4)
-//    FancyButton about;
+    @BindView(R.id.latlong)
+    TextView latlong;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
-
-        OneSignal.startInit(this)
-                .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
-                .unsubscribeWhenNotificationsAreDisabled(true)
-                .init();
+        setContentView(R.layout.activity_set_geo_fence);
 
         ButterKnife.bind(this);
+        seekBar.setEnabled(false);
+        btn_continue.setEnabled(false);
 
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        fetchLocation();
-
-        geoFence.setOnClickListener(new View.OnClickListener() {
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(),GeoFence.class));
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                circleOptions.radius(i);
+                if(mapCircle!=null){
+                    mapCircle.remove();
+                }
+                mapCircle=gMap.addCircle(circleOptions);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
             }
         });
 
-//        notifs.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                startActivity(new Intent(getApplicationContext(),Notifications.class));
-//            }
-//        });
-//
-//        about.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                startActivity(new Intent(getApplicationContext(),AboutPage.class));
-//            }
-//        });
+        btn_continue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(),Home.class));
+            }
+        });
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        fetchLocation();
 
     }
 
@@ -96,10 +104,11 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
             public void onSuccess(Location location) {
                 if (location != null) {
                     currentLocation = location;
-//                    Toast.makeText(getApplicationContext(), currentLocation.getLatitude() + "" + currentLocation.getLongitude(), Toast.LENGTH_SHORT).show();
-                    SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.myMapHome);
+                    latlong.setText("La= "+currentLocation.getLatitude() + "   " +"Lo="+ currentLocation.getLongitude());
+                    Toast.makeText(getApplicationContext(), "La= "+currentLocation.getLatitude() + "   " +"Lo="+ currentLocation.getLongitude(), Toast.LENGTH_SHORT).show();
+                    SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.myMap);
                     assert supportMapFragment!=null;
-                    supportMapFragment.getMapAsync(Home.this);
+                    supportMapFragment.getMapAsync(GeoFence.this);
                 }
             }
         });
@@ -110,10 +119,12 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
         MarkerOptions markerOptions = new MarkerOptions().position(latLng).title("Your Home Territory !");
-        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.home));
         googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
         googleMap.addMarker(markerOptions);
+
+        seekBar.setEnabled(true);
+        btn_continue.setEnabled(true);
 
         circleOptions = new CircleOptions();
         // Specifying the center of the circle
@@ -127,7 +138,8 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
         // Border width of the circle
         circleOptions.strokeWidth(3);
         // Adding the circle to the GoogleMap
-        googleMap.addCircle(circleOptions);
+        mapCircle = googleMap.addCircle(circleOptions);
+        gMap=googleMap;
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -139,5 +151,4 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
                 break;
         }
     }
-
 }

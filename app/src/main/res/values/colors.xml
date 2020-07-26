@@ -1,32 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6200EE</color>
-    <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorAccent">#03DAC5</color>
-    <color name="dot_dark_screen1">#39d1ba</color>
-    <color name="dot_dark_screen2">#14a895</color>
-    <color name="dot_dark_screen3">#14a895</color>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00e676</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="colorGreen">#00e676</color>
+    <color name="colorRed">#ff5252</color>
+    <color name="colorCompleteRed">#ff0000</color>
 
+    <color name="colorDark">#000000</color>
+    <color name="colorGrey">#707070</color>
+    <color name="colorWhite">#FFFFFF</color>
 
-    <!-- dots active colors -->
-    <color name="dot_light_screen1">#8de7f9</color>
-    <color name="dot_light_screen2">#8cf9eb</color>
-    <color name="dot_light_screen3">#8cf9eb</color>
-
-
-    <array name="array_dot_active">
-        <item>@color/dot_light_screen1</item>
-        <item>@color/dot_light_screen2</item>
-        <item>@color/dot_light_screen3</item>
-
-    </array>
-
-    <array name="array_dot_inactive">
-        <item>@color/dot_dark_screen1</item>
-        <item>@color/dot_dark_screen2</item>
-        <item>@color/dot_dark_screen3</item>
-
-    </array>
-    <color name="grey">#bfbfbf</color>
-    <color name="white">#fff</color>
+    <color name="blckSpl">#444444</color>
+    <color name="blckLite">#999999</color>
 </resources>
